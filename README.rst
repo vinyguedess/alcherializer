@@ -1,5 +1,10 @@
 
 
+.. image:: https://github.com/vinyguedess/alcherializer/actions/workflows/main.yml/badge.svg
+   :target: https://github.com/vinyguedess/alcherializer/actions/workflows/main.yml
+   :alt: Github Actions
+
+
 .. image:: https://api.codeclimate.com/v1/badges/332cfdc498df9f6dc272/maintainability
    :target: https://codeclimate.com/github/vinyguedess/alcherializer/maintainability
    :alt: Maintainability
