@@ -20,6 +20,20 @@ class Serializer:
         self.partial = kwargs.get("partial", False)
         self.validated_data = {}
 
+    @property
+    def data(self) -> Dict[str, Any]:
+        instances = self.instance if self.many else [self.instance]
+
+        results = []
+        for instance in instances:
+            obj_dict = {}
+            for key in self.fields.keys():
+                obj_dict[key] = getattr(instance, key)
+
+            results.append(obj_dict)
+
+        return results if self.many else results[0]
+
     def clear(self) -> None:
         self.errors = {}
         self.validated_data = {}
