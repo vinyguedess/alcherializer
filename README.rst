@@ -49,6 +49,33 @@ This instantly maps all fields declared in model.
 
 PS: For further exemplifications we will always use **User** and **UserSerializer**.
 
+Data
+----
+
+Gets a dictionary of a single model.
+
+.. code-block:: python
+
+   model = User(
+       name="Clark Kent",
+       age=31,
+       is_active=True)
+
+   serializer = UserSerializer(model)
+   serializer.data  # { "name": "Clark Kent", ... }
+
+Or, a list of models
+
+.. code-block:: python
+
+   model = User(
+       name="Clark Kent",
+       age=31,
+       is_active=True)
+
+   serializer = UserSerializer([model], many=True)
+   serializer.data  # [{ "name": "Clark Kent", ... }]
+
 Validation
 ----------
 

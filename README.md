@@ -30,6 +30,29 @@ class UserSerializer(Serializer):
 ```
 PS: For further exemplifications we will always use **User** and **UserSerializer**.
 
+## Data
+Gets a dictionary of a single model.
+```python
+model = User(
+    name="Clark Kent",
+    age=31,
+    is_active=True)
+
+serializer = UserSerializer(model)
+serializer.data  # { "name": "Clark Kent", ... }
+```
+
+Or, a list of models
+```python
+model = User(
+    name="Clark Kent",
+    age=31,
+    is_active=True)
+
+serializer = UserSerializer([model], many=True)
+serializer.data  # [{ "name": "Clark Kent", ... }]
+```
+
 ## Validation
 To validate a payload, it's possible to send it through data argument while
 instantiating the serializer and call **.is_valid** method.
