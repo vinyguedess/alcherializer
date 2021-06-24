@@ -33,6 +33,30 @@ class BaseField:
         return True, None
 
 
+class BooleanField(BaseField):
+    VALID_TRUES: List = [
+        "True", "T", "true", "t", True, 1, "1"
+    ]
+
+    VALID_FALSES: List = [
+        "False", "F", "false", "f", False, 0, "0"
+    ]
+
+    def cast(self, value) -> bool:
+        if value in self.VALID_TRUES:
+            return True
+        elif value in self.VALID_FALSES:
+            return False
+
+        return value
+
+    def check_if_is_a_valid_boolean(self, value) -> Tuple[bool, Union[str, None]]:
+        if not isinstance(value, bool):
+            return False, "Not a valid boolean"
+
+        return True, None
+
+
 class IntegerField(BaseField):
 
     def cast(self, value) -> int:

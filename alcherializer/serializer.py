@@ -87,4 +87,7 @@ class Serializer:
         if isinstance(field.type, sqlalchemy.Integer):
             return fields.IntegerField(key, field)
 
+        if isinstance(field.type, sqlalchemy.Boolean):
+            return fields.BooleanField(key, field)
+
         return fields.BaseField(key, field)
