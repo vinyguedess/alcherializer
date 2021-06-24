@@ -76,3 +76,12 @@ serializer = UserSerializer(data={
 serializer.is_valid()  # False
 serializer.errors # {"name": ["Can't be blank"]}
 ```
+
+## Fields
+This shows off how fields are mapped from SQLAlchemy models.
+
+Model attribute | Alcherializer field | Validations
+--- | --- |---
+Boolean | BooleanField | <ul><li>[x] Required</li><li>[x] Valid boolean</li></ul>
+BigInteger, Integer, SmallInteger | IntegerField | <ul><li>[x] Required</li></ul>
+String, Text Unicode | StringField | <ul><li>[x] Required</li><li>[x] Max length</li></ul>

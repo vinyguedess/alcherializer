@@ -1,3 +1,6 @@
+.. role:: raw-html-m2r(raw)
+   :format: html
+
 
 
 .. image:: https://github.com/vinyguedess/alcherializer/actions/workflows/main.yml/badge.svg
@@ -105,3 +108,25 @@ If any error happens you can fetch the information through error attribute.
    })
    serializer.is_valid()  # False
    serializer.errors # {"name": ["Can't be blank"]}
+
+Fields
+------
+
+This shows off how fields are mapped from SQLAlchemy models.
+
+.. list-table::
+   :header-rows: 1
+
+   * - Model attribute
+     - Alcherializer field
+     - Validations
+   * - Boolean
+     - BooleanField
+     - :raw-html-m2r:`<ul><li>[x] Required</li><li>[x] Valid boolean</li></ul>`
+   * - BigInteger, Integer, SmallInteger
+     - IntegerField
+     - :raw-html-m2r:`<ul><li>[x] Required</li></ul>`
+   * - String, Text Unicode
+     - StringField
+     - :raw-html-m2r:`<ul><li>[x] Required</li><li>[x] Max length</li></ul>`
+
