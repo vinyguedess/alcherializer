@@ -2,7 +2,7 @@ import os
 from setuptools import setup
 
 
-with open(os.path.join("README.rst")) as file:
+with open(os.path.join("README.md")) as file:
     readme = file.read()
 
 
@@ -17,6 +17,7 @@ setup(
     license="MIT",
     description="Django like model serializer",
     long_description=readme,
+    long_description_content_type="text/markdown",
     author="Vinicius Guedes",
     author_email="viniciusgued@gmail.com",
     url="https://github.com/vinyguedess/alcherializer",
