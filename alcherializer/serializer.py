@@ -4,6 +4,7 @@ from typing import (
 )
 
 import sqlalchemy
+from sqlalchemy.ext.declarative import DeclarativeMeta
 
 from alcherializer import fields
 from alcherializer.exceptions import MalformedMetaClassException
@@ -32,7 +33,7 @@ class Serializer:
         for instance in instances:
             obj_dict = {}
             for key in self.fields.keys():
-                obj_dict[key] = getattr(instance, key)
+                obj_dict[key] = self._get_instance_field_value(instance, key)
 
             results.append(obj_dict)
 
@@ -77,8 +78,10 @@ class Serializer:
                 continue
 
             columns[key] = {
-                "type": value.type,
-                "required": value.nullable is False,
+                "type": value.type if hasattr(value, "type") else value,
+                "required": value.nullable is False
+                if hasattr(value, "nullable")
+                else False,
                 "validator": self._get_field_validator(key, value),
             }
 
@@ -102,3 +105,24 @@ class Serializer:
             return fields.BooleanField(key, field)
 
         return fields.BaseField(key, field)
+
+    def _get_instance_field_value(self, instance, field: str) -> Any:
+        value = getattr(instance, field)
+        if isinstance(value.__class__, DeclarativeMeta):
+            serializer = self.fields[field]["validator"]
+            if isinstance(serializer, Serializer):
+                serializer.instance = value
+                return serializer.data
+
+        if (
+            isinstance(value, list)
+            and len(value) > 0
+            and isinstance(value[0].__class__, DeclarativeMeta)
+        ):
+            serializer = self.fields[field]["validator"]
+            if isinstance(serializer, Serializer):
+                serializer.instance = value
+                serializer.many = True
+                return serializer.data
+
+        return value

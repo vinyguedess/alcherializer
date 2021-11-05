@@ -19,5 +19,5 @@ lint:
 	isort alcherializer tests
 
 test:
-	python -m pytest -p no:warnings --cov=alcherializer -v
+	python -m pytest -p no:warnings --cov=alcherializer -vv
 	coverage html
