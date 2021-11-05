@@ -1,9 +1,9 @@
 from unittest import TestCase
+
 from alcherializer import fields
 
 
 class TestFieldsBooleanCast(TestCase):
-
     def test_cast_true_value(self) -> None:
         bool_field: fields.BooleanField = fields.BooleanField()
 

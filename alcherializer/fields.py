@@ -1,9 +1,14 @@
-from typing import Any, List, Tuple, Union
+from typing import (
+    Any,
+    List,
+    Tuple,
+    Union,
+)
+
 import sqlalchemy
 
 
 class BaseField:
-
     def __init__(self, name: str = None, field: sqlalchemy.Column = None):
         self.name = name
         self.field = field
@@ -26,7 +31,9 @@ class BaseField:
 
         return len(errors) <= 0, errors
 
-    def check_if_required_and_filled(self, value) -> Tuple[bool, Union[str, None]]:
+    def check_if_required_and_filled(
+        self, value
+    ) -> Tuple[bool, Union[str, None]]:
         if not self.field.nullable and (value is None or value == ""):
             return False, "Can't be blank"
 
@@ -34,13 +41,9 @@ class BaseField:
 
 
 class BooleanField(BaseField):
-    VALID_TRUES: List = [
-        "True", "T", "true", "t", True, 1, "1"
-    ]
+    VALID_TRUES: List = ["True", "T", "true", "t", True, 1, "1"]
 
-    VALID_FALSES: List = [
-        "False", "F", "false", "f", False, 0, "0"
-    ]
+    VALID_FALSES: List = ["False", "F", "false", "f", False, 0, "0"]
 
     def cast(self, value) -> bool:
         if value in self.VALID_TRUES:
@@ -50,7 +53,9 @@ class BooleanField(BaseField):
 
         return value
 
-    def check_if_is_a_valid_boolean(self, value) -> Tuple[bool, Union[str, None]]:
+    def check_if_is_a_valid_boolean(
+        self, value
+    ) -> Tuple[bool, Union[str, None]]:
         if not isinstance(value, bool):
             return False, "Not a valid boolean"
 
@@ -58,7 +63,6 @@ class BooleanField(BaseField):
 
 
 class IntegerField(BaseField):
-
     def cast(self, value) -> int:
         if value is None:
             return 0
@@ -67,14 +71,15 @@ class IntegerField(BaseField):
 
 
 class StringField(BaseField):
-
     def cast(self, value) -> str:
         if value is None:
             return ""
 
         return str(value)
 
-    def check_if_length_is_under_limit(self, value: str) -> Tuple[bool, Union[str, None]]:
+    def check_if_length_is_under_limit(
+        self, value: str
+    ) -> Tuple[bool, Union[str, None]]:
         if self.field.type.length and len(value) > self.field.type.length:
             return False, f"Limit of characters is {self.field.type.length}"
 

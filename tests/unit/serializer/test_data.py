@@ -1,10 +1,11 @@
 from unittest import TestCase
+
 import sqlalchemy
+
 from alcherializer import Serializer
 
 
 class TestSerializerData(TestCase):
-
     def test_data_single_instance(self) -> None:
         class MyModel:
             name = sqlalchemy.Column(sqlalchemy.String, nullable=False)
@@ -17,9 +18,7 @@ class TestSerializerData(TestCase):
         model.name = "hello world"
 
         serializer = MySerializer(model)
-        self.assertDictEqual(serializer.data, {
-            "name": "hello world"
-        })
+        self.assertDictEqual(serializer.data, {"name": "hello world"})
 
     def test_data_multiple_instances(self) -> None:
         class MyModel:
@@ -33,6 +32,4 @@ class TestSerializerData(TestCase):
         model.name = "hello world"
 
         serializer = MySerializer([model], many=True)
-        self.assertListEqual(serializer.data, [
-            {"name": "hello world"}
-        ])
+        self.assertListEqual(serializer.data, [{"name": "hello world"}])

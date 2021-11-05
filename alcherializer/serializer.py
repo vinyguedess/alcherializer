@@ -1,11 +1,15 @@
-from typing import Any, Dict
+from typing import (
+    Any,
+    Dict,
+)
+
 import sqlalchemy
+
 from alcherializer import fields
 from alcherializer.exceptions import MalformedMetaClassException
 
 
 class Serializer:
-
     def __init__(self, instance=None, data=None, **kwargs):
         if not hasattr(self, "Meta") or not hasattr(self.Meta, "model"):
             raise MalformedMetaClassException("Serializer bad definition")
@@ -68,7 +72,7 @@ class Serializer:
             columns[key] = {
                 "type": value.type,
                 "required": value.nullable is False,
-                "validator": self._get_field_validator(key, value)
+                "validator": self._get_field_validator(key, value),
             }
 
         return columns

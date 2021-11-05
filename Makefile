@@ -14,7 +14,10 @@ doc:
 	rm -rf README.rst
 	m2r README.md
 
+lint:
+	black alcherializer tests
+	isort alcherializer tests
+
 test:
-	coverage run tests/suite.py
+	python -m pytest -p no:warnings --cov=alcherializer -v
 	coverage html
-	coverage report
