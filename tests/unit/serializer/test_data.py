@@ -2,7 +2,10 @@ import sqlalchemy
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 
-from alcherializer import Serializer
+from alcherializer import (
+    Serializer,
+    fields,
+)
 
 
 def test_data_single_instance() -> None:
@@ -171,3 +174,29 @@ def test_data_get_related_has_many_models() -> None:
             {"id": 1, "hello": "world"},
         ],
     }
+
+
+def test_data_get_method_fields() -> None:
+    class MyModel(declarative_base()):
+        id = sqlalchemy.Column(
+            sqlalchemy.Integer, primary_key=True, nullable=False
+        )
+        first_name = sqlalchemy.Column(sqlalchemy.String)
+        last_name = sqlalchemy.Column(sqlalchemy.String)
+
+        __tablename__ = "my_model"
+
+    class MyModelSerializer(Serializer):
+        full_name = fields.MethodField()
+
+        def get_full_name(self, obj: MyModel):
+            return f"{obj.first_name} {obj.last_name}"
+
+        class Meta:
+            model = MyModel
+            fields = ["id", "full_name"]
+
+    model = MyModel(id=1, first_name="hello", last_name="world")
+
+    serializer = MyModelSerializer(model)
+    assert serializer.data == {"id": 1, "full_name": "hello world"}

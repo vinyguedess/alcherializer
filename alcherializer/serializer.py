@@ -85,6 +85,19 @@ class Serializer:
                 "validator": self._get_field_validator(key, value),
             }
 
+        for field in required_fields:
+            if field in columns:
+                continue
+
+            if not hasattr(self, field):
+                continue
+
+            columns[field] = {
+                "type": getattr(self, field),
+                "required": False,
+                "validator": self._get_field_validator(field, field),
+            }
+
         return columns
 
     def _get_field_validator(self, key: str, field):
@@ -107,6 +120,9 @@ class Serializer:
         return fields.BaseField(key, field)
 
     def _get_instance_field_value(self, instance, field: str) -> Any:
+        if isinstance(self.fields[field].get("type"), fields.MethodField):
+            return getattr(self, f"get_{field}", lambda o: None)(instance)
+
         value = getattr(instance, field)
         if isinstance(value.__class__, DeclarativeMeta):
             serializer = self.fields[field]["validator"]
