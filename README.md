@@ -15,6 +15,11 @@ This instantly maps all fields declared in model.
 from datetime import datetime
 from alcherializer import Serializer
 import sqlalchemy
+from sqlalchemy.orm import relationship
+
+
+class Manager:
+    name = sqlalchemy.Column(sqlalchemy.String(100))
 
 
 class User:
@@ -22,6 +27,8 @@ class User:
     age = sqlalchemy.Column(sqlalchemy.Integer)
     is_active = sqlalchemy.Column(sqlalchemy.Boolean)
     created_at = sqlalchemy.Column(sqlalchemy.DateTime, default=datetime.utcnow)
+    
+    organization = relationship(Manager, uselist=False)
 
 
 class UserSerializer(Serializer):
@@ -51,6 +58,30 @@ model = User(
 
 serializer = UserSerializer([model], many=True)
 serializer.data  # [{ "name": "Clark Kent", ... }]
+```
+
+### Related Serializers
+```python
+class ManagerSerializer(Serializer):
+    class Meta:
+        model = Manager
+
+
+class UserSerializer(Serializer):
+    manager = ManagerSerializer()
+
+    class Meta:
+        model = User
+
+
+model = User(
+    name="Peter Parker",
+    manager=Manager(
+        name="J. Jonah Jameson"
+    )
+)
+serializer = UserSerializer(model)
+serializer.data # {"name": "Peter Parker", "manager": {"name": "J. Jonah Jameson"}}
 ```
 
 ## Validation
