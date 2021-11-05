@@ -64,9 +64,16 @@ class Serializer:
         return len(self.errors.keys()) <= 0
 
     def _get_fields(self) -> Dict[str, Any]:
+        required_fields = []
+        if hasattr(self.meta, "fields"):
+            required_fields = self.meta.fields
+
         columns = {}
         for key, value in self.meta.model.__dict__.items():
             if key.startswith("_"):
+                continue
+
+            if required_fields and key not in required_fields:
                 continue
 
             columns[key] = {
