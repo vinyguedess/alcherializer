@@ -84,6 +84,28 @@ serializer = UserSerializer(model)
 serializer.data # {"name": "Peter Parker", "manager": {"name": "J. Jonah Jameson"}}
 ```
 
+### Custom fields
+```python
+from datetime import datetime, timedelta
+from alcherializer import fields
+
+class UserSerializer(Serializer):
+    year_of_birth = fields.MethodField()
+
+    def get_year_of_birth(self, user: User) -> datetime:
+        return datetime.utcnow() - timedelta(days=user.age * 365)
+
+    class Meta:
+        model = User
+        fields = ["id", "name", "year_of_birth"]
+
+
+model = User(id=1, name="Batman", age=30)
+
+serializer = UserSerializer(model)
+serializer.data # {"id": 1, "name": "Batman", "year_of_birth": 1991}
+```
+
 ## Validation
 To validate a payload, it's possible to send it through data argument while
 instantiating the serializer and call **.is_valid** method.
