@@ -1,38 +1,46 @@
-from unittest import TestCase
 import sqlalchemy
+from sqlalchemy.ext.declarative import declarative_base
+
 from alcherializer import Serializer
 
 
-class TestSerializerData(TestCase):
+def test_data_single_instance() -> None:
+    class MyModel(declarative_base()):
+        id = sqlalchemy.Column(
+            sqlalchemy.Integer, primary_key=True, nullable=False
+        )
+        name = sqlalchemy.Column(sqlalchemy.String, nullable=False)
 
-    def test_data_single_instance(self) -> None:
-        class MyModel:
-            name = sqlalchemy.Column(sqlalchemy.String, nullable=False)
+        __tablename__ = "my_model"
 
-        class MySerializer(Serializer):
-            class Meta:
-                model = MyModel
+    class MySerializer(Serializer):
+        class Meta:
+            model = MyModel
 
-        model = MyModel()
-        model.name = "hello world"
+    model = MyModel()
+    model.id = 1
+    model.name = "hello world"
 
-        serializer = MySerializer(model)
-        self.assertDictEqual(serializer.data, {
-            "name": "hello world"
-        })
+    serializer = MySerializer(model)
+    assert serializer.data == {"id": 1, "name": "hello world"}
 
-    def test_data_multiple_instances(self) -> None:
-        class MyModel:
-            name = sqlalchemy.Column(sqlalchemy.String, nullable=False)
 
-        class MySerializer(Serializer):
-            class Meta:
-                model = MyModel
+def test_data_multiple_instances() -> None:
+    class MyModel(declarative_base()):
+        id = sqlalchemy.Column(
+            sqlalchemy.Integer, primary_key=True, nullable=False
+        )
+        name = sqlalchemy.Column(sqlalchemy.String, nullable=False)
 
-        model = MyModel()
-        model.name = "hello world"
+        __tablename__ = "my_model"
 
-        serializer = MySerializer([model], many=True)
-        self.assertListEqual(serializer.data, [
-            {"name": "hello world"}
-        ])
+    class MySerializer(Serializer):
+        class Meta:
+            model = MyModel
+
+    model = MyModel()
+    model.id = 1
+    model.name = "hello world"
+
+    serializer = MySerializer([model], many=True)
+    assert serializer.data == [{"id": 1, "name": "hello world"}]

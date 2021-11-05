@@ -1,0 +1,4 @@
+[tool.black]
+line-length = 80
+extend_exclude = "^.*/(migrations/.*|setup).py$"
+target-version = ["py37"]

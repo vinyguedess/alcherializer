@@ -23,15 +23,14 @@ setup(
     url="https://github.com/vinyguedess/alcherializer",
     download_url="https://github.com/vinyguedess/alcherializer/archive/master.zip",
     keywords=["django", "flask", "serializer", "sql", "sqlalchemy", "alchemy"],
-    
     install_requires=requirements,
-    
     classifiers=[
-        'Development Status :: 5 - Production/Stable',
-        'Intended Audience :: Developers',
-        'Topic :: Software Development :: Build Tools',
-        'License :: OSI Approved :: MIT License',
-        'Programming Language :: Python :: 3.6',
-        'Programming Language :: Python :: 3.7',
-        'Programming Language :: Python :: 3.8'
-    ])
+        "Development Status :: 5 - Production/Stable",
+        "Intended Audience :: Developers",
+        "Topic :: Software Development :: Build Tools",
+        "License :: OSI Approved :: MIT License",
+        "Programming Language :: Python :: 3.6",
+        "Programming Language :: Python :: 3.7",
+        "Programming Language :: Python :: 3.8",
+    ],
+)

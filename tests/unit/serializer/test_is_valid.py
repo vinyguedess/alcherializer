@@ -1,236 +1,272 @@
-from unittest import TestCase
 import sqlalchemy
-from alcherializer import Serializer, fields
+from sqlalchemy.ext.declarative import declarative_base
 
+from alcherializer import (
+    Serializer,
+    fields,
+)
 
-class TestSerializerIsValidRequired(TestCase):
 
-    def test_required_fields(self) -> None:
-        class MyModel:
-            name = sqlalchemy.Column(sqlalchemy.String, nullable=False)
+def test_required_fields() -> None:
+    class MyModel(declarative_base()):
+        id = sqlalchemy.Column(
+            sqlalchemy.Integer, primary_key=True, nullable=False
+        )
+        name = sqlalchemy.Column(sqlalchemy.String, nullable=False)
 
-        class MySerializer(Serializer):
-            class Meta:
-                model = MyModel
+        __tablename__ = "my_model"
 
-        serializer = MySerializer(data={
-            "name": "Fulano"
-        })
+    class MySerializer(Serializer):
+        class Meta:
+            model = MyModel
 
-        self.assertTrue(serializer.is_valid())
-        self.assertDictEqual(serializer.errors, {})
+    serializer = MySerializer(data={"name": "Fulano"})
 
-    def test_required_fields_are_filled(self) -> None:
-        class MyModel:
-            name = sqlalchemy.Column(sqlalchemy.String, nullable=False)
+    assert serializer.is_valid()
+    assert serializer.errors == {}
 
-        class MySerializer(Serializer):
-            class Meta:
-                model = MyModel
 
-        serializer = MySerializer(data={
-            "name": None
-        })
+def test_required_fields_are_filled() -> None:
+    class MyModel(declarative_base()):
+        id = sqlalchemy.Column(
+            sqlalchemy.Integer, primary_key=True, nullable=False
+        )
+        name = sqlalchemy.Column(sqlalchemy.String, nullable=False)
 
-        self.assertFalse(serializer.is_valid())
-        self.assertDictEqual(serializer.errors, {
-            "name": ["Can't be blank"]
-        })
+        __tablename__ = "my_model"
 
-    def test_required_fields_ignore_except_fields(self) -> None:
-        class MyModel:
-            id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
-            name = sqlalchemy.Column(sqlalchemy.String, nullable=False)
+    class MySerializer(Serializer):
+        class Meta:
+            model = MyModel
 
-        class MySerializer(Serializer):
-            class Meta:
-                model = MyModel
+    serializer = MySerializer(data={"name": None})
 
-        serializer = MySerializer(data={
-            "name": "Fulano"
-        })
+    assert serializer.is_valid() is False
+    assert serializer.errors == {"name": ["Can't be blank"]}
 
-        self.assertTrue(serializer.is_valid())
-        self.assertDictEqual(serializer.errors, {})
 
+def test_required_fields_ignore_except_fields() -> None:
+    class MyModel(declarative_base()):
+        id = sqlalchemy.Column(
+            sqlalchemy.Integer, primary_key=True, nullable=False
+        )
+        name = sqlalchemy.Column(sqlalchemy.String, nullable=False)
 
-class TestSerializerClear(TestCase):
+        __tablename__ = "my_model"
 
-    def test_required_fields_are_filled(self) -> None:
-        class MyModel:
-            name = sqlalchemy.Column(sqlalchemy.String, nullable=False)
+    class MySerializer(Serializer):
+        class Meta:
+            model = MyModel
 
-        class MySerializer(Serializer):
-            class Meta:
-                model = MyModel
+    serializer = MySerializer(data={"name": "Fulano"})
 
-        serializer = MySerializer(data={
-            "name": None
-        })
+    assert serializer.is_valid()
+    assert serializer.errors == {}
 
-        self.assertFalse(serializer.is_valid())
-        self.assertDictEqual(serializer.errors, {
-            "name": ["Can't be blank"]
-        })
 
-        serializer.clear()
-        self.assertDictEqual(serializer.errors, {})
+def test_required_fields_are_filled_and_clearing_serializer() -> None:
+    class MyModel(declarative_base()):
+        id = sqlalchemy.Column(
+            sqlalchemy.Integer, primary_key=True, nullable=False
+        )
+        name = sqlalchemy.Column(sqlalchemy.String, nullable=False)
 
+        __tablename__ = "my_model"
 
-class TestSerializerDefiningValidator(TestCase):
+    class MySerializer(Serializer):
+        class Meta:
+            model = MyModel
 
-    def test_defining_validator(self) -> None:
-        class MyModel:
-            name = sqlalchemy.Column(sqlalchemy.String, nullable=False)
+    serializer = MySerializer(data={"name": None})
 
-        class MySerializer(Serializer):
-            name = fields.StringField()
+    assert serializer.is_valid() is False
+    assert serializer.errors == {"name": ["Can't be blank"]}
 
-            class Meta:
-                model = MyModel
+    serializer.clear()
+    assert serializer.errors == {}
 
-        serializer = MySerializer(data={
-            "name": "Fulano"
-        })
 
-        self.assertTrue(serializer.is_valid())
-        self.assertDictEqual(serializer.errors, {})
+def test_defining_validator() -> None:
+    class MyModel(declarative_base()):
+        id = sqlalchemy.Column(
+            sqlalchemy.Integer, primary_key=True, nullable=False
+        )
+        name = sqlalchemy.Column(sqlalchemy.String, nullable=False)
 
+        __tablename__ = "my_model"
 
-class TestSerializerBoolean(TestCase):
+    class MySerializer(Serializer):
+        name = fields.StringField()
 
-    def test_is_a_valid_true_boolean(self) -> None:
-        class MyModel:
-            is_active = sqlalchemy.Column(sqlalchemy.Boolean, nullable=False)
+        class Meta:
+            model = MyModel
 
-        class MySerializer(Serializer):
-            class Meta:
-                model = MyModel
+    serializer = MySerializer(data={"name": "Fulano"})
 
-        serializer = MySerializer(data={
-            "is_active": True
-        })
+    assert serializer.is_valid()
+    assert serializer.errors == {}
 
-        self.assertTrue(serializer.is_valid())
 
-    def test_is_a_valid_true_string_boolean(self) -> None:
-        class MyModel:
-            is_active = sqlalchemy.Column(sqlalchemy.Boolean, nullable=False)
+def test_is_a_valid_true_boolean() -> None:
+    class MyModel(declarative_base()):
+        id = sqlalchemy.Column(
+            sqlalchemy.Integer, primary_key=True, nullable=False
+        )
+        is_active = sqlalchemy.Column(sqlalchemy.Boolean, nullable=False)
 
-        class MySerializer(Serializer):
-            class Meta:
-                model = MyModel
+        __tablename__ = "my_model"
 
-        serializer = MySerializer(data={
-            "is_active": "true"
-        })
+    class MySerializer(Serializer):
+        class Meta:
+            model = MyModel
 
-        self.assertTrue(serializer.is_valid())
+    serializer = MySerializer(data={"is_active": True})
 
-    def test_is_a_valid_true_integer_boolean(self) -> None:
-        class MyModel:
-            is_active = sqlalchemy.Column(sqlalchemy.Boolean, nullable=False)
+    assert serializer.is_valid()
 
-        class MySerializer(Serializer):
-            class Meta:
-                model = MyModel
 
-        serializer = MySerializer(data={
-            "is_active": 1
-        })
+def test_is_a_valid_true_string_boolean() -> None:
+    class MyModel(declarative_base()):
+        id = sqlalchemy.Column(
+            sqlalchemy.Integer, primary_key=True, nullable=False
+        )
+        is_active = sqlalchemy.Column(sqlalchemy.Boolean, nullable=False)
 
-        self.assertTrue(serializer.is_valid())
+        __tablename__ = "my_model"
 
-    def test_is_a_valid_false_boolean(self) -> None:
-        class MyModel:
-            is_active = sqlalchemy.Column(sqlalchemy.Boolean, nullable=False)
+    class MySerializer(Serializer):
+        class Meta:
+            model = MyModel
 
-        class MySerializer(Serializer):
-            class Meta:
-                model = MyModel
+    serializer = MySerializer(data={"is_active": "true"})
 
-        serializer = MySerializer(data={
-            "is_active": False
-        })
+    assert serializer.is_valid()
 
-        self.assertTrue(serializer.is_valid())
 
-    def test_is_a_valid_false_string_boolean(self) -> None:
-        class MyModel:
-            is_active = sqlalchemy.Column(sqlalchemy.Boolean, nullable=False)
+def test_is_a_valid_true_integer_boolean() -> None:
+    class MyModel(declarative_base()):
+        id = sqlalchemy.Column(
+            sqlalchemy.Integer, primary_key=True, nullable=False
+        )
+        is_active = sqlalchemy.Column(sqlalchemy.Boolean, nullable=False)
 
-        class MySerializer(Serializer):
-            class Meta:
-                model = MyModel
+        __tablename__ = "my_model"
 
-        serializer = MySerializer(data={
-            "is_active": "false"
-        })
+    class MySerializer(Serializer):
+        class Meta:
+            model = MyModel
 
-        self.assertTrue(serializer.is_valid())
+    serializer = MySerializer(data={"is_active": 1})
 
-    def test_is_a_valid_false_integer_boolean(self) -> None:
-        class MyModel:
-            is_active = sqlalchemy.Column(sqlalchemy.Boolean, nullable=False)
+    assert serializer.is_valid()
 
-        class MySerializer(Serializer):
-            class Meta:
-                model = MyModel
 
-        serializer = MySerializer(data={
-            "is_active": 0
-        })
+def test_is_a_valid_false_boolean() -> None:
+    class MyModel(declarative_base()):
+        id = sqlalchemy.Column(
+            sqlalchemy.Integer, primary_key=True, nullable=False
+        )
+        is_active = sqlalchemy.Column(sqlalchemy.Boolean, nullable=False)
 
-        self.assertTrue(serializer.is_valid())
+        __tablename__ = "my_model"
 
-    def test_is_a_valid_boolean_error_if_not_a_castable_value(self) -> None:
-        class MyModel:
-            is_active = sqlalchemy.Column(sqlalchemy.Boolean, nullable=False)
+    class MySerializer(Serializer):
+        class Meta:
+            model = MyModel
 
-        class MySerializer(Serializer):
-            class Meta:
-                model = MyModel
+    serializer = MySerializer(data={"is_active": False})
 
-        serializer = MySerializer(data={
-            "is_active": "abc"
-        })
+    assert serializer.is_valid()
 
-        self.assertFalse(serializer.is_valid())
-        self.assertDictEqual(serializer.errors, {
-            "is_active": ["Not a valid boolean"]
-        })
 
+def test_is_a_valid_false_string_boolean() -> None:
+    class MyModel(declarative_base()):
+        id = sqlalchemy.Column(
+            sqlalchemy.Integer, primary_key=True, nullable=False
+        )
+        is_active = sqlalchemy.Column(sqlalchemy.Boolean, nullable=False)
 
-class TestSerializerString(TestCase):
+        __tablename__ = "my_model"
 
-    def test_has_valid_length(self) -> None:
-        class MyModel:
-            name = sqlalchemy.Column(sqlalchemy.String(6), nullable=False)
+    class MySerializer(Serializer):
+        class Meta:
+            model = MyModel
 
-        class MySerializer(Serializer):
-            class Meta:
-                model = MyModel
+    serializer = MySerializer(data={"is_active": "false"})
 
-        serializer = MySerializer(data={
-            "name": "Fulano"
-        })
+    assert serializer.is_valid()
 
-        self.assertTrue(serializer.is_valid())
-        self.assertDictEqual(serializer.errors, {})
 
-    def test_has_no_valid_length(self) -> None:
-        class MyModel:
-            name = sqlalchemy.Column(sqlalchemy.String(6), nullable=False)
+def test_is_a_valid_false_integer_boolean() -> None:
+    class MyModel(declarative_base()):
+        id = sqlalchemy.Column(
+            sqlalchemy.Integer, primary_key=True, nullable=False
+        )
+        is_active = sqlalchemy.Column(sqlalchemy.Boolean, nullable=False)
 
-        class MySerializer(Serializer):
-            class Meta:
-                model = MyModel
+        __tablename__ = "my_model"
 
-        serializer = MySerializer(data={
-            "name": "Fulanos"
-        })
+    class MySerializer(Serializer):
+        class Meta:
+            model = MyModel
 
-        self.assertFalse(serializer.is_valid())
-        self.assertDictEqual(serializer.errors, {
-            "name": ["Limit of characters is 6"]
-        })
+    serializer = MySerializer(data={"is_active": 0})
+
+    assert serializer.is_valid()
+
+
+def test_is_a_valid_boolean_error_if_not_a_castable_value() -> None:
+    class MyModel(declarative_base()):
+        id = sqlalchemy.Column(
+            sqlalchemy.Integer, primary_key=True, nullable=False
+        )
+        is_active = sqlalchemy.Column(sqlalchemy.Boolean, nullable=False)
+
+        __tablename__ = "my_model"
+
+    class MySerializer(Serializer):
+        class Meta:
+            model = MyModel
+
+    serializer = MySerializer(data={"is_active": "abc"})
+
+    assert serializer.is_valid() is False
+    assert serializer.errors == {"is_active": ["Not a valid boolean"]}
+
+
+def test_has_valid_length() -> None:
+    class MyModel(declarative_base()):
+        id = sqlalchemy.Column(
+            sqlalchemy.Integer, primary_key=True, nullable=False
+        )
+        name = sqlalchemy.Column(sqlalchemy.String(6), nullable=False)
+
+        __tablename__ = "my_model"
+
+    class MySerializer(Serializer):
+        class Meta:
+            model = MyModel
+
+    serializer = MySerializer(data={"name": "Fulano"})
+
+    assert serializer.is_valid()
+    assert serializer.errors == {}
+
+
+def test_has_no_valid_length() -> None:
+    class MyModel:
+        id = sqlalchemy.Column(
+            sqlalchemy.Integer, primary_key=True, nullable=False
+        )
+        name = sqlalchemy.Column(sqlalchemy.String(6), nullable=False)
+
+        __tablename__ = "my_model"
+
+    class MySerializer(Serializer):
+        class Meta:
+            model = MyModel
+
+    serializer = MySerializer(data={"name": "Fulanos"})
+
+    assert serializer.is_valid() is False
+    assert serializer.errors == {"name": ["Limit of characters is 6"]}
