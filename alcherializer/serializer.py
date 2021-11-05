@@ -66,7 +66,7 @@ class Serializer:
     def _get_fields(self) -> Dict[str, Any]:
         columns = {}
         for key, value in self.meta.model.__dict__.items():
-            if key.startswith("__"):
+            if key.startswith("_"):
                 continue
 
             columns[key] = {
