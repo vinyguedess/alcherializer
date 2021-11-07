@@ -84,3 +84,7 @@ class StringField(BaseField):
             return False, f"Limit of characters is {self.field.type.length}"
 
         return True, None
+
+
+class MethodField(BaseField):
+    pass
