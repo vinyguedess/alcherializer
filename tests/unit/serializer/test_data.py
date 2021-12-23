@@ -1,3 +1,5 @@
+import enum
+
 import sqlalchemy
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
@@ -48,6 +50,34 @@ def test_data_multiple_instances() -> None:
 
     serializer = MySerializer([model], many=True)
     assert serializer.data == [{"id": 1, "name": "hello world"}]
+
+
+def test_data_enum_fields() -> None:
+    class Option(enum.Enum):
+        OPTION_1 = 1
+        OPTION_2 = 2
+
+    class MyModel(declarative_base()):
+        id = sqlalchemy.Column(
+            sqlalchemy.Integer, primary_key=True, nullable=False
+        )
+        name = sqlalchemy.Column(sqlalchemy.String, nullable=False)
+        option = sqlalchemy.Column(sqlalchemy.Enum(Option), nullable=False)
+
+        __tablename__ = "my_model"
+
+    class MySerializer(Serializer):
+        class Meta:
+            model = MyModel
+            fields = ["id", "name", "option"]
+
+    model = MyModel()
+    model.id = 1
+    model.name = "hello world"
+    model.option = Option.OPTION_1
+
+    serializer = MySerializer(model)
+    assert serializer.data == {"id": 1, "name": "hello world", "option": 1}
 
 
 def test_data_get_only_declared_fields_if_declared() -> None:
