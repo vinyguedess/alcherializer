@@ -1,3 +1,4 @@
+import enum
 from typing import (
     Any,
     Dict,
@@ -129,6 +130,9 @@ class Serializer:
             if isinstance(serializer, Serializer):
                 serializer.instance = value
                 return serializer.data
+
+        if isinstance(value, enum.Enum):
+            return value.value
 
         if (
             isinstance(value, list)
