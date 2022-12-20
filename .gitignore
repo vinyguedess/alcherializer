@@ -1,6 +1,7 @@
 # App files an folders
 __pycache__
 .coverage
+.pytest_cache
 coverage
 venv
 

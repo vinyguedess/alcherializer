@@ -24,6 +24,7 @@ class Serializer:
         self.initial_data = {} if not data else data
         self.many = kwargs.get("many", False)
         self.partial = kwargs.get("partial", False)
+        self.context = kwargs.get("context", {})
         self.validated_data = {}
 
     @property
@@ -129,6 +130,7 @@ class Serializer:
             serializer = self.fields[field]["validator"]
             if isinstance(serializer, Serializer):
                 serializer.instance = value
+                serializer.context = self.context
                 return serializer.data
 
         if isinstance(value, enum.Enum):
@@ -143,6 +145,7 @@ class Serializer:
             if isinstance(serializer, Serializer):
                 serializer.instance = value
                 serializer.many = True
+                serializer.context = self.context
                 return serializer.data
 
         return value
